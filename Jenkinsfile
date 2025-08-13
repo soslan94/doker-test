@@ -1,9 +1,12 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.11'
+            image 'docker:27.3.1'
             args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /home/soso/PycharmProjects/doker_test/dok_test:/code'
         }
+    }
+    environment {
+        HOME = "${WORKSPACE}"
     }
     stages {
         stage('Checkout') {
@@ -13,25 +16,27 @@ pipeline {
         }
         stage('Check Python version') {
             steps {
-                sh 'python --version'
+                sh 'python3 --version'
             }
         }
         stage('Install dependencies') {
             steps {
-                sh 'pip install --upgrade pip'
-                sh 'pip install -r requirements.txt || echo "No requirements.txt found"'
+                sh 'pip install --user --upgrade pip'
+                sh 'pip install --user -r requirements.txt || echo "No requirements.txt found"'
             }
         }
         stage('Run script') {
             steps {
-                sh 'echo "print(\'Hello from Jenkins inside Python 3.11\')" > test.py'
-                sh 'python test.py'
+                sh 'echo "print(\'Hello from Jenkins inside Docker\')" > test.py'
+                sh 'python3 test.py'
             }
         }
         stage('Install Docker Compose') {
             steps {
-                sh 'apt update && apt install -y docker.io'
-                sh 'pip install docker-compose'
+                sh '''
+                    apk add --no-cache python3 py3-pip
+                    pip3 install --user docker-compose
+                '''
             }
         }
         stage('Build Docker Compose') {
