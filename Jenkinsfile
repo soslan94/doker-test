@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.11'
-            args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/code'
+            args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /home/soso/PycharmProjects/doker_test/dok_test:/code'
         }
     }
     stages {
@@ -36,12 +36,16 @@ pipeline {
         }
         stage('Build Docker Compose') {
             steps {
-                sh 'docker-compose build'
+                dir('/code') {
+                    sh 'docker-compose build'
+                }
             }
         }
         stage('Deploy Docker Compose') {
             steps {
-                sh 'docker-compose up -d'
+                dir('/code') {
+                    sh 'docker-compose up -d'
+                }
             }
         }
     }
