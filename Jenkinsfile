@@ -2,19 +2,19 @@ pipeline {
     agent {
         docker {
             image 'python:3.11'
-            // чтобы не упереться в права внутри временного контейнера
-            args '-u root'
+            args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/code'
         }
     }
     stages {
         stage('Checkout') {
             steps {
-                // если у тебя дефолтная ветка master (судя по логам) — так и оставь
-                git 'https://github.com/soslan94/doker-test.git'
+                git branch: 'main', url: 'https://github.com/soslan94/doker-test.git'
             }
         }
         stage('Check Python version') {
-            steps { sh 'python --version' }
+            steps {
+                sh 'python --version'
+            }
         }
         stage('Install dependencies') {
             steps {
@@ -25,6 +25,17 @@ pipeline {
         stage('Run script') {
             steps {
                 sh 'echo "print(\'Hello from Jenkins inside Python 3.11\')" > test.py'
+                sh 'python test.py'
+            }
+        }
+        stage('Build Docker Compose') {
+            steps {
+                sh 'docker-compose build'
+            }
+        }
+        stage('Deploy Docker Compose') {
+            steps {
+                sh 'docker-compose up -d'
             }
         }
     }
