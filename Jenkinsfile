@@ -13,12 +13,13 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 sh '''
-                    apk add --no-cache python3 py3-pip git
+                    apk add --no-cache python3 py3-pip git curl
                     python3 --version
                     python3 -m venv $WORKSPACE/venv
                     . $WORKSPACE/venv/bin/activate
                     pip install --upgrade pip
-                    pip install docker-compose
+                    curl -L "https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                    chmod +x /usr/local/bin/docker-compose
                     docker-compose --version
                 '''
             }
@@ -48,20 +49,14 @@ pipeline {
         stage('Build Docker Compose') {
             steps {
                 dir('/code') {
-                    sh '''
-                        . $WORKSPACE/venv/bin/activate
-                        docker-compose build
-                    '''
+                    sh 'docker-compose build'
                 }
             }
         }
         stage('Deploy Docker Compose') {
             steps {
                 dir('/code') {
-                    sh '''
-                        . $WORKSPACE/venv/bin/activate
-                        docker-compose up -d
-                    '''
+                    sh 'docker-compose up -d'
                 }
             }
         }
