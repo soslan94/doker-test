@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/soslan94/doker-test.git'
+                git branch: 'master', url: 'https://github.com/soslan94/doker-test.git'
             }
         }
         stage('Check Python version') {
@@ -26,6 +26,12 @@ pipeline {
             steps {
                 sh 'echo "print(\'Hello from Jenkins inside Python 3.11\')" > test.py'
                 sh 'python test.py'
+            }
+        }
+        stage('Install Docker Compose') {
+            steps {
+                sh 'apt update && apt install -y docker.io'
+                sh 'pip install docker-compose'
             }
         }
         stage('Build Docker Compose') {
