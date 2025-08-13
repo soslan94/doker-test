@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.10'
+            image 'python:3.11'
             args '-u root'
         }
     }
@@ -22,3 +22,10 @@ pipeline {
                 sh 'pip install -r requirements.txt || echo "No requirements.txt found"'
             }
         }
+        stage('Run script') {
+            steps {
+                sh 'echo "print(\'Hello from Jenkins inside Python 3.11\')" > test.py'
+            }
+        }
+    }
+}
