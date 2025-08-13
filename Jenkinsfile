@@ -1,7 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.11'
+            image 'python:3.10'
+            args '-u root'
         }
     }
     stages {
@@ -10,11 +11,14 @@ pipeline {
                 git 'https://github.com/soslan94/doker-test.git'
             }
         }
+        stage('Check Python version') {
+            steps {
+                sh 'python --version'
+            }
+        }
         stage('Install dependencies') {
             steps {
                 sh 'pip install --upgrade pip'
                 sh 'pip install -r requirements.txt || echo "No requirements.txt found"'
             }
         }
-    }
-}
