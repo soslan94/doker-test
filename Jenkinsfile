@@ -2,19 +2,19 @@ pipeline {
     agent {
         docker {
             image 'python:3.11'
+            // чтобы не упереться в права внутри временного контейнера
             args '-u root'
         }
     }
     stages {
         stage('Checkout') {
             steps {
+                // если у тебя дефолтная ветка master (судя по логам) — так и оставь
                 git 'https://github.com/soslan94/doker-test.git'
             }
         }
         stage('Check Python version') {
-            steps {
-                sh 'python --version'
-            }
+            steps { sh 'python --version' }
         }
         stage('Install dependencies') {
             steps {

@@ -32,15 +32,15 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "8080:8080"   # Jenkins UI
-      - "50000:50000" # Jenkins agent port
+      - "8080:8080"
+      - "50000:50000"
+    # ВАЖНО: монтируем сокет докера хоста
     volumes:
       - jenkins_home:/var/jenkins_home
-      # Опционально: если хотите позволить Jenkins запускать docker build/run:
       - /var/run/docker.sock:/var/run/docker.sock
-      # Можете также примонтировать /usr/bin/docker если нужно (обычно не нужно)
+    # Проще всего — запустить Jenkins как root, чтобы не ловить "permission denied"
+    user: "0:0"
     environment:
-      # не отключаем setup wizard по умолчанию; при необходимости можно добавить параметры
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
 
 
