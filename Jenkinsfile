@@ -7,36 +7,34 @@ pipeline {
     }
     environment {
         HOME = "${WORKSPACE}"
+        PATH = "${WORKSPACE}/.local/bin:/usr/local/bin:/usr/bin:/bin"
     }
     stages {
+        stage('Setup Environment') {
+            steps {
+                sh '''
+                    apk add --no-cache python3 py3-pip git
+                    pip3 install --user --upgrade pip
+                    pip3 install --user docker-compose
+                    python3 --version
+                    docker-compose --version
+                '''
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'master', url: 'https://github.com/soslan94/doker-test.git'
             }
         }
-        stage('Check Python version') {
-            steps {
-                sh 'python3 --version'
-            }
-        }
         stage('Install dependencies') {
             steps {
-                sh 'pip install --user --upgrade pip'
-                sh 'pip install --user -r requirements.txt || echo "No requirements.txt found"'
+                sh 'pip3 install --user -r requirements.txt || echo "No requirements.txt found"'
             }
         }
         stage('Run script') {
             steps {
                 sh 'echo "print(\'Hello from Jenkins inside Docker\')" > test.py'
                 sh 'python3 test.py'
-            }
-        }
-        stage('Install Docker Compose') {
-            steps {
-                sh '''
-                    apk add --no-cache python3 py3-pip
-                    pip3 install --user docker-compose
-                '''
             }
         }
         stage('Build Docker Compose') {
