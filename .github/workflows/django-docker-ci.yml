@@ -65,7 +65,6 @@ jobs:
           DATABASE_USER: test_user
           DATABASE_PASSWORD: test_pass
         run: |
-          cd dok_test
           python manage.py migrate --noinput
 
       - name: Run tests
