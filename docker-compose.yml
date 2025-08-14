@@ -26,24 +26,6 @@ services:
     ports:
       - "8000:8000"
 
-  jenkins:
-    build:
-      context: ./jenkins
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    # ВАЖНО: монтируем сокет докера хоста
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    # Проще всего — запустить Jenkins как root, чтобы не ловить "permission denied"
-    user: "0:0"
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
-
 
 volumes:
   pgdata:
-  jenkins_home:
